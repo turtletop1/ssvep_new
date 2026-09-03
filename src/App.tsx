@@ -1,124 +1,60 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
-import Header from './components/Header'
+import React from 'react';
+import { DndContext, type DragEndEvent } from '@dnd-kit/core';
+import { Sidebar } from './components/sidebar/Sidebar';
+import { Canvas } from './components/canvas/Canvas';
+import { useCanvasStore } from './stores/useCanvasStore';
 
-function App() {
-  const [count, setCount] = useState(0)
+export const App: React.FC = () => {
+
+  const addItem = useCanvasStore((state) => state.addItem);   // 從 Zustand Store 提取所需 Actions
+  const moveBox = useCanvasStore((state) => state.moveBox);
+
+
+  const handleDragEnd = (event: DragEndEvent) => {   // 處理拖曳放開後的邏輯
+    const { active, over, delta } = event;
+
+    if (!over) return;    // 如果沒有拖放到任何可放置目標 (Droppable Zone) 上，則不做處理
+
+    if (active.id === 'new-stimulus-item' && over.id === 'canvas-droppable-zone') { //情況1 從Sidebar拖進Canvas新增方塊
+      const dropPosition = {                          // 根據拖曳位移量 (delta) 計算初始放置座標
+        x: Math.max(20, 300 + delta.x),
+        y: Math.max(20, 100 + delta.y),
+      };
+
+      addItem(                  // 呼叫 Store 新增方塊
+        {
+          type: 'stimulus',
+          text: 'Stimulus',
+          color: '#ffffff',
+        },
+        dropPosition
+      );
+      return;
+    }
+
+    const isCanvasItem = active.data.current?.isCanvasItem;   //情況2 在 Canvas 內部移動既有方塊的位置
+    if (isCanvasItem) {
+      const item = active.data.current?.item;
+      if (item) {
+        const newX = Math.max(0, item.position.x + delta.x);  // 計算放開後的新座標 = 原本座標 + 移動距離 (delta)
+        const newY = Math.max(0, item.position.y + delta.y);
+
+        moveBox(item.id, { x: newX, y: newY });   // 呼叫 moveBox 更新 Store 內的座標
+      }
+    }
+  };
 
   return (
-    <>
-      <Header/>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+                        // 使用 DndContext 包裹整個應用程式，並傳入 handleDragEnd 處理函式
+    <DndContext onDragEnd={handleDragEnd}>
+      <div className="d-flex w-100 vh-100 overflow-hidden">
+        <Sidebar />
+        <main className="flex-grow-1 h-100">
+          <Canvas />
+        </main>
+      </div>
+    </DndContext>
+  );
+};
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
-}
-
-export default App
+export default App;
