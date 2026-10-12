@@ -1,0 +1,157 @@
+
+
+-----------------------------------------------------------------------------------------
+
+
+//檔案：AAAA
+
+    interface aaaa {                     // 設定 React Component 的 attribute
+        isTurtle?: boolean;              // 設定isTurtle    類型 (? 代表可以沒有傳入)
+        turtle_func?: () => void;        // 設定turtle_func 類型
+    }
+
+    export const AAAA: React.FC<aaaa> = ({     //傳入aaaa 裏面 obj 類型
+        isTurtle: isTurtle_1,                   // 傳入 aaaa 既 attr  -> 重新命名為 isTurtle_1
+        turtle_func                             // 傳入 aaaa 既 function
+    }) => {
+        ... ...
+    
+    };
+
+
+// 檔案：App.tsx (父組件)
+    
+    import React, { useState } from 'react';
+    import { AAAA } from './components/AAAA';
+
+    export const App = () => {
+
+        const [turtle, setTurtle] = useState(false);      // 定義一個state, setTurtle = 改turtle值func  , useState(false) = 預設停止狀態
+
+        const turtle_function = () => {        //定義一個 Function
+            setTurtle(!turtle);               // 切換狀態 turtle = false
+        };
+        
+        return (
+            <div>
+                <AAAA 
+                    isTurtle={turtle} 
+                    turtle_func={turtle_function}   {/* 從呢度 傳入到 AAAA */}
+                />
+            </div>
+        );
+    };
+
+--------------------------------------------------------------------------------------------------------
+Record 用法: 
+
+    type AAAA = {                           // interface AAAA   // interface -> 類似abstract - 定義固定嘅attribute
+        email: string;
+        password: string;
+    };
+
+    const User: Record<string, AAAA> = {
+        "aaaa": {
+            email: "example@example.com",
+            password: "12345678",
+        },
+    };
+
+    console.log( User["aaaa"].email);       // "example@example.com"
+
+
+-------------------------
+Record 另一種寫法:
+
+    const User: Record<string, {
+            email: string;
+            password: string;
+    }> = {
+        "aaaa": {
+            email: "example@example.com",
+            password: "12345678",
+        },
+    };
+
+
+---------------------------------------------------------------------------------------------
+[React]
+    is a popular, open-source JavaScript library used for building interactive web and native user interfaces through composable components.
+    React 是一個流行的開源 JavaScript 程式庫，用於透過可組合元件建立互動式 Web 和原生使用者介面。
+
+
+useState
+    - 狀態管理對於建立動態、互動式元件至關重要 , useState -> 可讓您儲存+更新變更值， eg 表單輸入+使用者互動
+
+    import React, { useState } from 'react';
+
+    function NameForm() {
+
+        const [name, setName] = useState('');       設置name 屬性 + setName既func
+
+        const handleChange = (event) => {
+            setName(event.target.value);
+        };
+
+        return (
+            <div>
+                <input type="text" value={name} onChange={handleChange} />
+                <p>Your name is: {name}</p>
+            </div>
+        );
+    }
+
+
+useEffect
+    - 可讓您在func中執行副作用，eg 資料取得、直接與 DOM 互動、 設定訂閱
+    - 在元件載入時取得使用者資料是一項常見任務：
+
+    import React, { useEffect, useState } from 'react';
+
+    function UserProfile({ userId }) {
+
+        const [user, setUser] = useState(null);
+
+        useEffect(() => {
+            fetch(`https://api.example.com/user/${userId}`)
+            .then((response) => response.json())
+            .then((data) => setUser(data));
+
+            return () => console.log('Cleanup if needed');
+
+        }, [userId]);       // 當 userId 改變時執行
+
+        return (
+            <div>
+                {user ? <p>User name: {user.name}</p> : <p>Loading...</p>}
+            </div>
+        );
+    }
+ ---------------------------------------------------------------------------------------------------------------
+
+
+
+
+    useStore.tsx
+
+    const data = {
+        globalConfig: {
+            isRunning: true
+        }
+    };
+    ---------
+
+    const getRunning = useStore(
+        (aaa) => aaa.globalConfig.isRunning;       //aaa = data
+    )
+
+    const result = getRunning(data);
+
+    console.log(result);
+
+
+-------------------------------------------------------------------
+
+    const { isRunning, duration } = useCanvasStore(
+        (state) => state.globalConfig
+    );

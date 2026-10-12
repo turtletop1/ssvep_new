@@ -1,4 +1,5 @@
-// 負責處理 @dnd-kit/core 的拖曳邏輯，作為可重用的封裝底層
+// 負責處理 @dnd-kit/core 的拖曳邏輯，作為可重用的封裝底層 
+// 利用 @dnd-kit/core 的 useDraggable 處理元素拖曳狀態（如平移 transform、透明度、半透明抓取游標等）
 
 import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
@@ -10,14 +11,9 @@ export interface DraggableSidebarItemProps {
     data?: Record<string, unknown>;
     onClick?: () => void;
     children: React.ReactNode;
-    }
+}
 
-    export const DraggableSidebarItem: React.FC<DraggableSidebarItemProps> = ({
-    id,
-    data,
-    onClick,
-    children,
-    }) => {
+export const DraggableSidebarItem: React.FC<DraggableSidebarItemProps> = ({id,data,onClick,children,}) => {
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
         id,
         data,
@@ -33,14 +29,14 @@ export interface DraggableSidebarItemProps {
 
     return (
         <div
-        ref={setNodeRef}
-        style={style}
-        {...listeners}
-        {...attributes}
-        onClick={onClick}
-        className="draggable-item p-2 bg-dark text-center rounded border border-secondary"
+            ref={setNodeRef}
+            style={style}
+            {...listeners}
+            {...attributes}
+            onClick={onClick}
+            className="draggable-item p-2 bg-dark text-center rounded border border-secondary"
         >
-        {children}
+            {children}
         </div>
     );
 };

@@ -1,0 +1,33 @@
+update web site
+    npm install gh-pages --save-dev 
+    npm run deploy 
+
+└
+
+[components]
+        |
+        |____[canvas]
+    :-->|       |___[Canvas.tsx]
+    :   |
+    :   |____[sidebar]
+    :   |        |___ [DraggableSidebarItem.tsx]  處理 @dnd-kit/core 拖曳邏輯 (可重用), 利用 @dnd-kit/core 的useDraggable處理obj拖曳狀態
+    :   |        |
+    :-->|        |____[Sidebar.tsx]    控制面板，讓使用者可以 管理 Canvas 上的物件 以及 控制 SSVEP 的 state
+    :   |
+    :   |
+    :   |
+    :   |
+    :   |
+    :   |
+    :   |
+    :   |----[stores]
+    :          |
+    -----------|______[useCanvasStore.ts]  讀取 & 修改 item 資料
+
+
+
+Square Wave（方波）
+ - 亮度直接由 100% 跳到 0%，再由 0% 跳返 100%，適合模擬開關式閃爍
+
+Sine Wave（正弦波）
+ - 亮度平滑地逐漸增加，再逐漸減少，唔會突然跳變。
